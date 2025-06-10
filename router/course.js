@@ -1,4 +1,6 @@
 import express from 'express';
+import { courseModel } from '../db.js';
+
 const courseRouter = express.Router();
 
 courseRouter.post("/purchase", (req, res) => {
@@ -7,7 +9,7 @@ courseRouter.post("/purchase", (req, res) => {
     })
 })
 
-courseRouter.get("/courses", (req, res) => {
+courseRouter.get("/preview", (req, res) => {
     res.json({
         message: "courses endpoint"
     })

@@ -10,6 +10,7 @@ const adminRouter = express.Router();
 
 adminRouter.post("/signup", async (req, res) => {
     try {
+        //TODO - Zod validation
         const {firstname, lastname, email, password} = req.body;
 
         if(!firstname || !lastname || !email || !password) {
@@ -47,6 +48,7 @@ adminRouter.post("/signup", async (req, res) => {
 adminRouter.post("/signin", async (req, res) => {
     try {
         const { email, password } = req.body;
+        //TODO - Zod validation
 
         const admin = await userModel.findOne({
             email: email
@@ -82,7 +84,7 @@ adminRouter.post("/signin", async (req, res) => {
 
 adminRouter.post("/course", adminMiddleware, async (req, res) => {
     const adminId = req.adminId;
-
+    //TODO - Zod validation
     const { title, description, price, imageUrl } = req.body;
     if(!title || !description || !price || !imageUrl) {
         res.json({

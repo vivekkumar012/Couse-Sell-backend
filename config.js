@@ -1,2 +1,2 @@
-export const JWT_USER_SECRET = 'abcfdreg'
-export const JWT_ADMIN_SECRET = "nbvcxz";
+export const JWT_USER_SECRET = process.env.JWT_USER_SECRET
+export const JWT_ADMIN_SECRET = process.env.JWT_ADMIN_SECRET;

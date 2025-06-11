@@ -3,7 +3,7 @@ import { userModel } from '../db.js';
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import {z} from 'zod'
-const JWT_USER_SECRET = 'abcfdreg'
+import { JWT_USER_SECRET } from '../config.js';
 
 const userRouter = express.Router();
 

@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { JWT_ADMIN_SECRET } from '../config.js';
 import { adminMiddleware } from '../middleware/admin.js';
 
+
 const adminRouter = express.Router();
 
 adminRouter.post("/signup", async (req, res) => {
@@ -76,7 +77,7 @@ adminRouter.post("/signin", async (req, res) => {
 
     } catch (error) {
         res.status(403).json({
-            message: "Error in Admin Signup",
+            message: "Error in Admin SignIn",
             error: error.message
         })
     }
@@ -86,6 +87,7 @@ adminRouter.post("/course", adminMiddleware, async (req, res) => {
     const adminId = req.adminId;
     //TODO - Zod validation
     const { title, description, price, imageUrl } = req.body;
+    
     if(!title || !description || !price || !imageUrl) {
         res.json({
             msg: "All fields are required"
@@ -105,15 +107,84 @@ adminRouter.post("/course", adminMiddleware, async (req, res) => {
     })
 })
 
-adminRouter.put("/course", (req, res) => {
-    res.json({
-        msg: "Signup Admin endpoint"
-    })
+adminRouter.put("/course", adminMiddleware, async (req, res) => {
+    try {
+        const adminId = req.adminId;
+
+        const { title, description, price, imageUrl, courseId } = req.body;
+
+        const course = await courseModel.findOne({
+            _id: courseId,
+            creatorId: adminId
+        });
+        if(!course) {
+            res.status(403).json({
+                msg: "Course Not exist with this admin id"
+            })
+        }
+
+        await courseModel.updateOne({
+            _id: courseId,
+            creatorId: adminId
+        }, {
+            title: title || course.title,
+            description: description || course.description,
+            price: price || course.price,
+            imageUrl: imageUrl || course.imageUrl
+        });
+
+        res.status(200).json({
+            msg: "Course Updated",
+            courseId: course._id
+        })
+    } catch (error) {
+        res.status(403).json({
+            msg: "Error in admin course update",
+            error: error.message
+        })
+    }
 })
 
-adminRouter.get("/bulk", (req, res) => {
+adminRouter.delete("/course", adminMiddleware, async (req, res) => {
+    // Todo: Zod validation
+    try {
+        const adminId = req.adminId;
+
+        const { courseId } = req.body;
+
+        const course = await courseModel.findOne({
+            _id: courseId,
+            creatorId: adminId
+        })
+        if(!course) {
+            res.status(403).json({
+                msg: "Course not exist with this admin id"
+            })
+        }
+        await courseModel.deleteOne({
+            _id: courseId,
+            creatorId: adminId
+        });
+
+        res.status(200).json({
+            msg: "Course Deleted"
+        })
+    } catch (error) {
+        res.status(403).json({
+            msg: "Error in course deletion",
+            error: error.message
+        })
+    }
+})
+
+adminRouter.get("/course/bulk", adminMiddleware, async (req, res) => {
+    const adminId = req.adminId;
+    const courses = await courseModel.find({
+        creatorId: adminId
+    })
     res.json({
-        msg: "Signup Admin endpoint"
+        msg: "All courses",
+        courses: courses
     })
 })
 
